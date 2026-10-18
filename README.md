@@ -23,7 +23,9 @@ Usuarios demo (clave `velox`): **ghost** (organizador), **turbo_vale** (piloto),
 
 El mapa no necesita API key. Usa tiles abiertos con respaldo automático: OpenStreetMap → Esri → CARTO (en estilo *Noche* se oscurece el mapa claro). Si un proveedor falla en el dispositivo, la app pasa sola al siguiente y recuerda cuál anduvo durante la sesión; si fallan todos, muestra un aviso con *Reintentar*. En *Capas → Fuente del mapa* se puede forzar uno.
 
-Para navegar con la app de mapas del teléfono, las rutas, lugares y juntadas tienen *Abrir en…* con los links oficiales de Google Maps, Apple Maps y Waze (en iPhone aparece primero Apple Maps). Esos links tampoco requieren key.
+**Elegir destino** sin recorrer el mapa: botón *¿A dónde?* con buscador de direcciones (Nominatim de OpenStreetMap, sin key), lo más cercano de cada tipo (taller, estación, lavadero, gomería, tuning) a un toque, lugares guardados y juntadas con ubicación desbloqueada. También se puede tocar cualquier punto del mapa → *Ir acá* o *Guardar*.
+
+**Manejar**: cámara de persecución 3D (el mapa gira para que el auto siempre mire hacia adelante) o vista 2D cenital que sigue al auto. Con GPS va **en vivo**: se pega a la ruta, avisa alertas y si te salís más de ~45 m durante 5 s recalcula solo. Sin GPS (o con el botón *SIM*) simula el recorrido.
 
 ## Fotos demo
 

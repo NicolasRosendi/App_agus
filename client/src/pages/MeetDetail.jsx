@@ -11,7 +11,6 @@ import { spotIcon } from '../lib/mapIcons.js';
 import Icon from '../components/Icon.jsx';
 import TacticalMap from '../components/TacticalMap.jsx';
 import PassCard from '../components/PassCard.jsx';
-import OpenInMaps from '../components/OpenInMaps.jsx';
 import { Avatar, BackBar, Countdown, Glitch, Overlay } from '../components/ui.jsx';
 
 function AccessFlash({ decision, onDone }) {
@@ -107,7 +106,6 @@ export default function MeetDetail() {
         </div>
         <p className="meet-desc">{meet.desc}</p>
         {meet.spot && <div className="mono cyan"><Icon name="pin" size={14} /> {meet.spot.label}</div>}
-        {meet.spot && <OpenInMaps dest={meet.spot} />}
 
         <div className="grid-3 mt meet-stats">
           <div className="stat"><b>{meet.approved}</b><small>confirmados</small></div>

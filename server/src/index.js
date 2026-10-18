@@ -11,6 +11,7 @@ import feed from './routes/feed.js';
 import map from './routes/map.js';
 import meets from './routes/meets.js';
 import routing from './routes/routing.js';
+import geo from './routes/geo.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENT_DIST = path.join(__dirname, '..', '..', 'client', 'dist');
@@ -29,6 +30,7 @@ app.use('/api/feed', feed);
 app.use('/api/map', map);
 app.use('/api/meets', meets);
 app.use('/api/route', routing);
+app.use('/api/geo', geo);
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Endpoint no encontrado' }));
 app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '7d' }));
 

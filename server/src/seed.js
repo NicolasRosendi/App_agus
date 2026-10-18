@@ -59,6 +59,12 @@ export function seed() {
   }));
   const by = Object.fromEntries(users.map((u) => [u.handle, u]));
   by.ghost.following = ['u_nyx', 'u_vale'];
+  // Destinos guardados de ejemplo para la elección rápida en el mapa.
+  by.ghost.prefs.places = [
+    { id: 'casa', name: 'Casa', lat: -34.5876, lng: -58.4310 },
+    { id: 'garage', name: 'Garage del crew', lat: -34.6115, lng: -58.3712 },
+  ];
+  by.turbo_vale.prefs.places = [{ id: 'casa', name: 'Casa', lat: -34.6290, lng: -58.4010 }];
   by.nyx.following = ['u_ghost'];
   by.turbo_vale.following = ['u_ghost', 'u_nyx', 'u_drift'];
   by.drift_kid.following = ['u_ghost', 'u_vale'];

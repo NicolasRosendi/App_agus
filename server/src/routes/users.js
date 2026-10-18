@@ -48,7 +48,16 @@ r.patch('/me', (req, res) => {
   if (typeof crew === 'string') u.crew = crew.trim().slice(0, 24).toUpperCase() || null;
   if (typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color)) u.color = color;
   if (Array.isArray(interests)) u.interests = interests.filter((i) => CATEGORIES.includes(i)).slice(0, 6);
-  if (prefs && typeof prefs === 'object') u.prefs = { ...u.prefs, ...prefs };
+  if (prefs && typeof prefs === 'object') {
+    u.prefs = { ...u.prefs, ...prefs };
+    // Lugares guardados (destinos rápidos): máx. 12, solo campos conocidos.
+    if (Array.isArray(prefs.places)) {
+      u.prefs.places = prefs.places
+        .filter((p) => p && Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng)))
+        .slice(0, 12)
+        .map((p) => ({ id: String(p.id || Date.now()).slice(0, 24), name: String(p.name || 'Lugar').slice(0, 30), lat: Number(p.lat), lng: Number(p.lng) }));
+    }
+  }
   save();
   res.json({ user: publicUser(u, u) });
 });
