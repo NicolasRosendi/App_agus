@@ -70,7 +70,7 @@ export default function CreateMeet() {
 
         <div className="section-title">02 · El spot</div>
         <div className="spot-picker">
-          <TacticalMap ref={mapRef} center={DEFAULT_CENTER} zoom={13} mapStyle={user.prefs.mapStyle}>
+          <TacticalMap ref={mapRef} center={DEFAULT_CENTER} zoom={13} mapStyle={user.prefs.mapStyle} source={user.prefs.mapSource}>
             <CenterWatcher onMove={(c) => setSpot({ lat: c.lat, lng: c.lng })} />
           </TacticalMap>
           <div className="map-crosshair"><Icon name="crosshair" size={44} stroke={1.5} /></div>

@@ -21,7 +21,9 @@ Usuarios demo (clave `velox`): **ghost** (organizador), **turbo_vale** (piloto),
 
 ## Mapa
 
-El mapa no necesita API key. Usa tiles abiertos con respaldo automático: CARTO → OpenStreetMap → Esri (en estilo *Noche*, si no está el oscuro de CARTO se oscurece uno claro). Si un proveedor falla en el dispositivo, la app pasa sola al siguiente y recuerda cuál anduvo durante la sesión; si fallan todos, muestra un aviso con *Reintentar*.
+El mapa no necesita API key. Usa tiles abiertos con respaldo automático: OpenStreetMap → Esri → CARTO (en estilo *Noche* se oscurece el mapa claro). Si un proveedor falla en el dispositivo, la app pasa sola al siguiente y recuerda cuál anduvo durante la sesión; si fallan todos, muestra un aviso con *Reintentar*. En *Capas → Fuente del mapa* se puede forzar uno.
+
+Para navegar con la app de mapas del teléfono, las rutas, lugares y juntadas tienen *Abrir en…* con los links oficiales de Google Maps, Apple Maps y Waze (en iPhone aparece primero Apple Maps). Esos links tampoco requieren key.
 
 ## Fotos demo
 

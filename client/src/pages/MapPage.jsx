@@ -13,7 +13,8 @@ import { makeTrack, pointAt, alongTrack } from '../lib/geo.js';
 import { bodyFor } from '../lib/car3d.js';
 import { reportIcon, poiIcon, zoneIcon, spotIcon, destIcon } from '../lib/mapIcons.js';
 import Icon from '../components/Icon.jsx';
-import TacticalMap, { MAP_STYLES } from '../components/TacticalMap.jsx';
+import TacticalMap, { MAP_STYLES, MAP_SOURCES } from '../components/TacticalMap.jsx';
+import OpenInMaps from '../components/OpenInMaps.jsx';
 import { Countdown, Sheet } from '../components/ui.jsx';
 
 const MapCar3D = lazy(() => import('../components/MapCar3D.jsx'));
@@ -70,6 +71,7 @@ export default function MapPage() {
   const mapRef = useRef(null);
   const prefs = user.prefs;
   const mapStyle = prefs.mapStyle || 'calle';
+  const mapSource = prefs.mapSource || 'auto';
   const myCar = user.cars[0];
   const carLook = { body: bodyFor(myCar), color: myCar?.color || '#d8461b' };
 
@@ -222,7 +224,7 @@ export default function MapPage() {
   return (
     <div className={`screen full map-screen page-enter ${driving ? 'is-driving' : ''}`}>
       <div className={`map-wrap ${tilt || driving ? 'tilted' : ''}`}>
-        <TacticalMap ref={mapRef} center={DEFAULT_CENTER} zoom={13} mapStyle={mapStyle}>
+        <TacticalMap ref={mapRef} center={DEFAULT_CENTER} zoom={13} mapStyle={mapStyle} source={mapSource}>
           <Tracker onMove={setCenter} onPick={onPick} onZoom={setZoom} />
 
           {prefs.layers.meets && meets.map((m) => (m.spot ? (
@@ -368,6 +370,7 @@ export default function MapPage() {
             <button className="btn ghost sm" onClick={() => setPanel('steps')}><span>Paso a paso</span></button>
             <button className="btn sm" onClick={startDrive}><Icon name="play" size={16} /> Manejar</button>
           </div>
+          {dest && <OpenInMaps dest={dest} origin={me} />}
         </div>
       )}
 
@@ -411,6 +414,12 @@ export default function MapPage() {
         <div className="chips mb">
           {Object.entries(MAP_STYLES).map(([k, s]) => (
             <button key={k} className={`chip ${mapStyle === k ? 'on' : ''}`} onClick={() => savePrefs({ mapStyle: k })}><span>{s.label}</span></button>
+          ))}
+        </div>
+        <div className="label mb">Fuente del mapa</div>
+        <div className="chips mb">
+          {Object.entries(MAP_SOURCES).map(([k, label]) => (
+            <button key={k} className={`chip ${mapSource === k ? 'on' : ''}`} onClick={() => savePrefs({ mapSource: k })}><span>{label}</span></button>
           ))}
         </div>
         <label className="toggle">
@@ -479,6 +488,7 @@ export default function MapPage() {
               </div>
               <div className="mono muted mt-s">{dms(p.lat, p.lng)}</div>
               <button className="btn block mt" onClick={() => traceRoute({ lat: p.lat, lng: p.lng })}><Icon name="route" size={20} /> Ruta fantasma hasta acá</button>
+              <OpenInMaps dest={p} origin={me} />
             </div>
           );
         })()}
@@ -500,6 +510,7 @@ export default function MapPage() {
                 <button className="btn sm" onClick={() => nav(`/juntadas/${m.id}`)}>Ver juntada</button>
                 {m.spot && <button className="btn ghost sm" onClick={() => traceRoute(m.spot)}><span>Ruta</span></button>}
               </div>
+              {m.spot && <OpenInMaps dest={m.spot} origin={me} />}
             </div>
           );
         })()}

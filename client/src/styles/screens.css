@@ -344,3 +344,6 @@
 .steps-points { text-align: center; }
 .reward { --c: var(--orange); padding: 14px; border-left: 3px solid var(--c); }
 .map-actions .btn { font-size: 17px; white-space: nowrap; padding: 0 12px; }
+.open-maps { display: grid; gap: 10px; margin-top: 14px; }
+.open-maps-rest { display: flex; justify-content: center; gap: 18px; font-family: var(--f-mono); font-size: 12px; }
+.open-maps-rest a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
