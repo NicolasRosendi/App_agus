@@ -24,9 +24,7 @@ export function MeetCard({ m }) {
           {m.status === 'cancelled' && <span className="badge red">CANCELADA</span>}
         </div>
         <h3 className="h-display h-lg meet-card-title">{m.title}</h3>
-        <div className="row wrap" style={{ gap: 6 }}>
-          {m.tags.map((t) => <span key={t} className="badge orange">{t}</span>)}
-        </div>
+        {m.tags.length > 0 && <div className="mono muted" style={{ fontSize: 12, letterSpacing: '0.08em' }}>{m.tags.slice(0, 3).join(' · ')}</div>}
         <div className="meet-card-meta mono">
           <span>{m.revealed ? <><Icon name="unlock" size={14} /> {m.spot.label}</> : <><Icon name="lock" size={14} /> UBICACIÓN CIFRADA</>}</span>
           <span>T- <Countdown to={m.startsAt} className="orange" /></span>

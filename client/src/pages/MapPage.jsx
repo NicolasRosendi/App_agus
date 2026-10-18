@@ -19,13 +19,15 @@ import { Countdown, Sheet } from '../components/ui.jsx';
 const MapCar3D = lazy(() => import('../components/MapCar3D.jsx'));
 
 const NAV_ZOOM = 17;
+const POI_MIN_ZOOM = 14; // los lugares aparecen al acercarse, para no saturar la vista general
 const NAV_SECONDS = 50; // la demo recorre cualquier ruta en ~50 s
 const TURN_GLYPH = { left: '↰', 'sharp left': '↰', 'slight left': '↖', right: '↱', 'sharp right': '↱', 'slight right': '↗', uturn: '↶', straight: '↑' };
 const glyph = (s) => (s.type === 'arrive' ? '◉' : s.type === 'depart' ? '▲' : s.type === 'roundabout' || s.type === 'rotary' ? '⟳' : TURN_GLYPH[s.modifier] || '↑');
 
-function Tracker({ onMove, onPick }) {
+function Tracker({ onMove, onPick, onZoom }) {
   useMapEvents({
     move: (e) => onMove(e.target.getCenter()),
+    zoomend: (e) => onZoom(e.target.getZoom()),
     click: (e) => onPick(e.latlng),
   });
   return null;
@@ -48,17 +50,15 @@ function PlayerMarker({ position, children }) {
   );
 }
 
-// OSD de videocasetera: ▶ PLAY + contador de cinta + fecha.
+// OSD de videocasetera: ▶ PLAY + contador de cinta.
 function VhsOsd() {
   const start = useRef(Date.now());
   const now = useNow(1000);
   const s = Math.floor((now - start.current) / 1000);
   const pad = (n) => String(n).padStart(2, '0');
-  const d = new Date(now);
   return (
     <>
-      <div className="vhs-osd vhs-tl"><span className="vhs-blink">▶</span> PLAY <span className="dim">SP</span><br />{pad(Math.floor(s / 3600))}:{pad(Math.floor(s / 60) % 60)}:{pad(s % 60)}</div>
-      <div className="vhs-osd vhs-br">{d.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' }).toUpperCase().replace('.', '')} {d.getFullYear()}<br />{pad(d.getHours())}:{pad(d.getMinutes())}</div>
+      <div className="vhs-osd vhs-tl"><span className="vhs-blink">▶</span> PLAY {pad(Math.floor(s / 3600))}:{pad(Math.floor(s / 60) % 60)}:{pad(s % 60)}</div>
     </>
   );
 }
@@ -78,6 +78,7 @@ export default function MapPage() {
   const [meets, setMeets] = useState([]);
   const [gps, setGps] = useState(null);
   const [center, setCenter] = useState(DEFAULT_CENTER);
+  const [zoom, setZoom] = useState(13);
   const [selected, setSelected] = useState(null); // { kind, item }
   const [panel, setPanel] = useState(null); // 'report' | 'layers' | 'steps'
   const [placing, setPlacing] = useState(null);
@@ -117,7 +118,7 @@ export default function MapPage() {
   };
 
   const visibleReports = useMemo(() => (prefs.layers.reports ? reports.filter((r) => prefs.reportTypes.includes(r.type)) : []), [reports, prefs]);
-  const visiblePois = useMemo(() => (prefs.layers.pois ? pois.filter((p) => prefs.poiTypes.includes(p.type)) : []), [pois, prefs]);
+  const visiblePois = useMemo(() => (prefs.layers.pois && zoom >= POI_MIN_ZOOM ? pois.filter((p) => prefs.poiTypes.includes(p.type)) : []), [pois, prefs, zoom]);
 
   const flyTo = (p, z = 15) => mapRef.current?.flyTo([p.lat, p.lng], z, { duration: 0.8 });
 
@@ -222,7 +223,7 @@ export default function MapPage() {
     <div className={`screen full map-screen page-enter ${driving ? 'is-driving' : ''}`}>
       <div className={`map-wrap ${tilt || driving ? 'tilted' : ''}`}>
         <TacticalMap ref={mapRef} center={DEFAULT_CENTER} zoom={13} mapStyle={mapStyle}>
-          <Tracker onMove={setCenter} onPick={onPick} />
+          <Tracker onMove={setCenter} onPick={onPick} onZoom={setZoom} />
 
           {prefs.layers.meets && meets.map((m) => (m.spot ? (
             <Marker key={m.id} position={[m.spot.lat, m.spot.lng]} icon={spotIcon(m.title)} eventHandlers={{ click: () => setSelected({ kind: 'meet', item: m }) }} />
@@ -288,13 +289,11 @@ export default function MapPage() {
                 <span className="cassette-reels"><i /><i /></span>
               </div>
               <div className="cassette-coords mono">{dms(center.lat, center.lng)}</div>
-              <div className="cassette-meta mono">{visibleReports.length} alertas · {visiblePois.length} lugares</div>
             </div>
           </div>
           <div className="map-tools">
             <button className={`icon-btn ${panel === 'layers' ? 'on' : ''}`} onClick={() => setPanel('layers')} aria-label="Capas"><Icon name="layers" /></button>
             <button className="icon-btn" onClick={() => savePrefs({ mapStyle: mapStyle === 'calle' ? 'noche' : 'calle' })} aria-label="Estilo de mapa"><span className="mono" style={{ fontSize: 11 }}>{mapStyle === 'calle' ? 'NOCHE' : 'CALLE'}</span></button>
-            <button className={`icon-btn ${tilt ? 'on' : ''}`} onClick={() => setTilt((t) => !t)} aria-label="Vista 3D"><Icon name="cube" /></button>
             <button className="icon-btn" onClick={() => flyTo(me, 16)} aria-label="Mi ubicación"><Icon name="gps" /></button>
           </div>
         </div>
@@ -414,7 +413,12 @@ export default function MapPage() {
             <button key={k} className={`chip ${mapStyle === k ? 'on' : ''}`} onClick={() => savePrefs({ mapStyle: k })}><span>{s.label}</span></button>
           ))}
         </div>
-        {[['reports', 'Alertas de la comunidad'], ['pois', 'Talleres · lavaderos · estaciones'], ['meets', 'Juntadas']].map(([k, l]) => (
+        <label className="toggle">
+          <span>Vista 3D inclinada</span>
+          <input type="checkbox" checked={tilt} onChange={(e) => setTilt(e.target.checked)} />
+          <span className="sw" />
+        </label>
+        {[['reports', 'Alertas de la comunidad'], ['pois', 'Talleres · lavaderos · estaciones (al acercar)'], ['meets', 'Juntadas']].map(([k, l]) => (
           <label key={k} className="toggle">
             <span>{l}</span>
             <input type="checkbox" checked={prefs.layers[k]} onChange={(e) => savePrefs({ layers: { ...prefs.layers, [k]: e.target.checked } })} />

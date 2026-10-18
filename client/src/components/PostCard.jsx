@@ -104,10 +104,9 @@ export default function PostCard({ post: initial, onDelete }) {
         <button className={`act ${post.liked ? 'on' : ''}`} onClick={like}><Icon name="heart" fill={post.liked ? 'currentColor' : 'none'} /> <b>{post.likes}</b></button>
         <button className="act" onClick={() => setOpen(true)}><Icon name="comment" /> <b>{post.comments.length}</b></button>
         <button className="act" onClick={share}><Icon name="share" /></button>
-        <div className="grow" />
-        <div className="row" style={{ gap: 6 }}>{post.tags.map((t) => <span key={t} className="badge orange">#{t}</span>)}</div>
       </div>
       {post.text && <p className="post-text"><b className="mono">@{post.author.handle}</b> {post.text}</p>}
+      {post.tags.length > 0 && <div className="post-tags">{post.tags.map((t) => `#${t}`).join('  ')}</div>}
       <Sheet open={open} onClose={() => setOpen(false)} title="Comentarios">
         <Comments post={post} onChange={setPost} />
       </Sheet>

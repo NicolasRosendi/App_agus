@@ -10,31 +10,6 @@ import { Avatar } from '../components/ui.jsx';
 
 const MODES = [['para-vos', 'Para vos'], ['siguiendo', 'Siguiendo'], ['recientes', 'Recientes']];
 
-function Ticker() {
-  const [items, setItems] = useState([]);
-  useEffect(() => {
-    Promise.all([api('/map/reports'), api('/meets')]).then(([r, m]) => {
-      const count = (t) => r.reports.filter((x) => x.type === t).length;
-      setItems([
-        `${count('control')} CONTROLES ACTIVOS`,
-        `${count('camara')} CÁMARAS MAPEADAS`,
-        `${m.meets.filter((x) => x.status !== 'ended').length} JUNTADAS EN EL RADAR`,
-        `${count('bache')} CALLES ROTAS`,
-        'NO QUEMES EN ZONA URBANA',
-        'RESPETÁ EL SPOT O PERDÉS EL ACCESO',
-      ]);
-    }).catch(() => {});
-  }, []);
-  if (!items.length) return null;
-  const text = items.join('  ///  ');
-  return (
-    <div className="ticker">
-      <span className="ticker-tag">LIVE</span>
-      <div className="ticker-track"><span>{text}  ///  {text}  ///  </span></div>
-    </div>
-  );
-}
-
 function Radar() {
   const [users, setUsers] = useState([]);
   useEffect(() => { api('/users/search').then((d) => setUsers(d.users)).catch(() => {}); }, []);
@@ -75,11 +50,9 @@ export default function Feed() {
     <div className="screen page-enter">
       <div className="topbar">
         <div className="brand grow">VEL<b>O</b>X<small>underground</small></div>
-        <Link to="/pasos" className="icon-btn" aria-label="Modo pasos"><Icon name="steps" /></Link>
         <Notifications />
         <Link to="/crear" className="icon-btn on" aria-label="Crear post"><Icon name="plus" /></Link>
       </div>
-      <Ticker />
       <Radar />
       <div className="feed-modes">
         {MODES.map(([k, l]) => (

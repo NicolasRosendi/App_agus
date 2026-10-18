@@ -43,10 +43,11 @@ El repo incluye `render.yaml` (Blueprint). En Render: **New → Blueprint** → 
 - Start: `npm start`
 - Health check: `/api/health`
 - `JWT_SECRET` autogenerado
+- `MAP_API_KEY`: la key de CARTO. **No está en el repo**: cargala en Render → tu servicio → *Environment* → *Add Environment Variable*. El server la inyecta en la página y viaja en los pedidos de tiles del mapa.
 
 > Para la demo los datos viven en `server/data/db.json` y los archivos subidos en `server/uploads/`. En Render el disco es efímero: cada deploy/reinicio vuelve a sembrar los datos de ejemplo. Para producción: Postgres + almacenamiento de objetos (S3/R2).
 
-Variables opcionales: `OSRM_URL` (motor de rutas propio; por defecto el servidor público de OSRM), `DATA_DIR`, `UPLOAD_DIR`.
+Variables opcionales: `MAP_API_KEY` (key de CARTO), `OSRM_URL` (motor de rutas propio; por defecto el servidor público de OSRM), `DATA_DIR`, `UPLOAD_DIR`.
 
 ## Instalar en el celular
 

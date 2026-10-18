@@ -92,6 +92,7 @@ export default function Profile() {
       {param && !self ? <BackBar title={`@${u.handle}`} /> : (
         <div className="topbar">
           <div className="h-display h-md grow">PERFIL</div>
+          <Link to="/pasos" className="icon-btn" aria-label="Modo pasos"><Icon name="steps" /></Link>
           <Link to="/garage" className="icon-btn" aria-label="Garage"><Icon name="car" /></Link>
           <Link to="/ajustes" className="icon-btn" aria-label="Ajustes"><Icon name="settings" /></Link>
         </div>
@@ -152,11 +153,11 @@ export default function Profile() {
             ))}
           </div>
         ) : (
-          <div className="feed" style={{ margin: '0 -16px' }}>{data.posts.map((p) => <PostCard key={p.id} post={p} />)}</div>
+          <div className="feed" style={{ margin: '0 -20px' }}>{data.posts.map((p) => <PostCard key={p.id} post={p} />)}</div>
         )}
       </div>
       <Sheet open={!!openPost} onClose={() => setOpenPost(null)}>
-        {openPost && <div style={{ margin: '0 -16px' }}><PostCard post={openPost} /></div>}
+        {openPost && <div style={{ margin: '0 -20px' }}><PostCard post={openPost} /></div>}
       </Sheet>
     </div>
   );
