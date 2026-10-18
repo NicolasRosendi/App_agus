@@ -1,0 +1,14 @@
+{
+  "name": "velox-underground",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VELOX // UNDERGROUND — red social de autos, juntadas privadas y mapa táctico (demo PWA).",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "install:all": "npm ci --prefix server && npm ci --include=dev --prefix client",
+    "build": "npm run install:all && npm run build --prefix client",
+    "start": "node server/src/index.js",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client"
+  }
+}

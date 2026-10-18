@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: velox-underground
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: JWT_SECRET
+        generateValue: true

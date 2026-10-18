@@ -1,0 +1,60 @@
+// Íconos de trazo propios (24x24) para mantener la estética angulosa.
+export const ICON_PATHS = {
+  feed: 'M3 4h18v6H3zM3 14h8v6H3zM15 14h6v6h-6z',
+  reels: 'M5 3h14v18H5zM10 9l5 3-5 3z',
+  map: 'M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15',
+  meets: 'M12 2l9 5v10l-9 5-9-5V7zM12 8v8M8 10l4-2 4 2',
+  user: 'M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM3 22l3-6h12l3 6',
+  plus: 'M12 4v16M4 12h16',
+  heart: 'M12 21l-8.5-8.5a5 5 0 0 1 7-7L12 7l1.5-1.5a5 5 0 0 1 7 7z',
+  comment: 'M3 4h18v12H8l-5 4z',
+  share: 'M4 12v8h16v-8M12 3v12M7 8l5-5 5 5',
+  lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4',
+  unlock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 7.5-2',
+  eye: 'M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  camera: 'M3 7h4l2-3h6l2 3h4v13H3zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+  radar: 'M12 12L19 5M21 12a9 9 0 1 1-9-9M17 12a5 5 0 1 1-5-5M12 12h.01',
+  shield: 'M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z',
+  pothole: 'M2 18h20M5 18c1-4 3-6 7-6s6 2 7 6M8 9l2-3M14 9l1-4M18 10l2-2',
+  crash: 'M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z',
+  cone: 'M9 4h6l4 16H5zM7 12h10M3 20h18',
+  wrench: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z',
+  bolt: 'M13 2L4 14h7l-1 8 9-12h-7z',
+  drop: 'M12 2s7 8 7 13a7 7 0 1 1-14 0c0-5 7-13 7-13z',
+  fuel: 'M4 21V4h9v17M3 21h11M13 9h3l2 2v7a2 2 0 0 0 4 0V8l-3-3M7 8h3',
+  tire: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 3v5M12 16v5M3 12h5M16 12h5',
+  route: 'M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 15V9a4 4 0 0 1 4-4h6M18 9v6a4 4 0 0 1-4 4H8',
+  target: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 2v4M12 18v4M2 12h4M18 12h4',
+  layers: 'M12 2l10 5-10 5L2 7zM2 12l10 5 10-5M2 17l10 5 10-5',
+  bell: 'M6 16V11a6 6 0 0 1 12 0v5l2 3H4zM10 21h4',
+  settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15l1.6 2.8-2.2 2.2L16 18.4a7 7 0 0 1-2 .8L13 22h-2l-1-2.8a7 7 0 0 1-2-.8L5.2 20 3 17.8 4.6 15a7 7 0 0 1-.8-2L1 12v-2l2.8-1a7 7 0 0 1 .8-2L3 4.2 5.2 2 8 3.6a7 7 0 0 1 2-.8L11 0h2l1 2.8a7 7 0 0 1 2 .8L18.8 2 21 4.2 19.4 7a7 7 0 0 1 .8 2l2.8 1v2l-2.8 1a7 7 0 0 1-.8 2z',
+  close: 'M5 5l14 14M19 5L5 19',
+  check: 'M4 12l5 5L20 6',
+  back: 'M15 4l-8 8 8 8',
+  send: 'M3 11l18-8-8 18-2-8z',
+  key: 'M15 7a4 4 0 1 1-3.9 5H8v3H5v3H2v-4l7.1-7.1A4 4 0 0 1 15 7z',
+  terminal: 'M3 4h18v16H3zM7 9l3 3-3 3M12 15h5',
+  steps: 'M7 21c-2 0-3-2-3-4s1-5 3-5 3 3 3 5-1 4-3 4zM17 13c-2 0-3-2-3-4s1-5 3-5 3 3 3 5-1 4-3 4z',
+  car: 'M3 16v-4l2-5h14l2 5v4zM3 16v3h3v-3M18 16v3h3v-3M7 13h.01M17 13h.01',
+  play: 'M7 4l13 8-13 8z',
+  mute: 'M4 9h4l5-5v16l-5-5H4zM17 9l5 6M22 9l-5 6',
+  sound: 'M4 9h4l5-5v16l-5-5H4zM17 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14',
+  pin: 'M12 22s7-7 7-12a7 7 0 1 0-14 0c0 5 7 12 7 12zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  broadcast: 'M12 12h.01M8.5 15.5a5 5 0 0 1 0-7M15.5 8.5a5 5 0 0 1 0 7M5 19a10 10 0 0 1 0-14M19 5a10 10 0 0 1 0 14',
+  trash: 'M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14',
+  image: 'M3 4h18v16H3zM3 16l5-5 4 4 3-3 6 6M15 9a1.5 1.5 0 1 0 0-.01',
+  logout: 'M15 4h5v16h-5M10 8l-4 4 4 4M6 12h11',
+  crosshair: 'M12 2v6M12 16v6M2 12h6M16 12h6',
+  gps: 'M12 19a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM12 2v3M12 19v3M2 12h3M19 12h3M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  cube: 'M12 2l9 5v10l-9 5-9-5V7zM3 7l9 5 9-5M12 12v10',
+  qr: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zM18 18h3v3h-3zM14 20h2M20 14v2',
+  skull: 'M12 2a8 8 0 0 0-8 8c0 3 1.5 5 3 6v4h10v-4c1.5-1 3-3 3-6a8 8 0 0 0-8-8zM9 11h.01M15 11h.01M10 20v-3M14 20v-3',
+};
+
+export default function Icon({ name, size = 22, stroke = 2, className, style, fill = 'none' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth={stroke} strokeLinecap="square" strokeLinejoin="miter" className={className} style={style} aria-hidden="true">
+      <path d={ICON_PATHS[name] || ICON_PATHS.target} />
+    </svg>
+  );
+}
