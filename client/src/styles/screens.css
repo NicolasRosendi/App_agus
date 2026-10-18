@@ -138,7 +138,11 @@
 .map-wrap.tilted { inset: -55% -60%; transform: perspective(1100px) rotateX(52deg); }
 .leaflet-container.tactical-map { width: 100%; height: 100%; background: #e8e4dc; font-family: var(--f-mono); }
 .leaflet-container.tactical-map.map-noche { background: #1b1c1f; }
-.map-noche .leaflet-tile-pane { filter: brightness(1.45) contrast(1.08); }
+.map-noche .leaflet-layer:not(.tiles-dark) { filter: brightness(1.45) contrast(1.08); }
+.leaflet-layer.tiles-dark { filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92) saturate(0.7); }
+.map-offline { position: absolute; inset: 0; z-index: 450; display: grid; place-content: center; justify-items: center; gap: 10px; padding: 24px; text-align: center; background: rgba(15, 16, 18, 0.85); color: var(--text); font-family: var(--f-ui); }
+.map-offline b { font-family: var(--f-display); font-style: italic; font-size: 24px; text-transform: uppercase; }
+.map-offline span { color: var(--muted); font-size: 14px; max-width: 260px; }
 .leaflet-container .leaflet-control-attribution { background: rgba(0, 0, 0, 0.6); color: #9aa1a9; font-size: 9px; }
 .leaflet-container .leaflet-control-attribution a { color: #c4c9cf; }
 .map-screen .leaflet-bottom { bottom: calc(var(--tabbar-h) + var(--safe-b)); }

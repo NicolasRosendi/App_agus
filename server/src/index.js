@@ -32,16 +32,9 @@ app.use('/api/route', routing);
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Endpoint no encontrado' }));
 app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '7d' }));
 
-// Config pública para el cliente (la key del mapa vive en el entorno, no en el repo).
-const publicConfig = { mapApiKey: process.env.MAP_API_KEY || null };
-
 if (fs.existsSync(CLIENT_DIST)) {
-  const html = fs.readFileSync(path.join(CLIENT_DIST, 'index.html'), 'utf8').replace(
-    '<!--VELOX_CONFIG-->',
-    `<script>window.__VELOX__=${JSON.stringify(publicConfig).replace(/</g, '\\u003c')}</script>`,
-  );
   app.use(express.static(CLIENT_DIST, { index: false, maxAge: '1h' }));
-  app.get('*', (_req, res) => res.type('html').set('cache-control', 'no-cache').send(html));
+  app.get('*', (_req, res) => res.set('cache-control', 'no-cache').sendFile(path.join(CLIENT_DIST, 'index.html')));
 }
 
 app.use((err, _req, res, _next) => {

@@ -19,6 +19,10 @@ Red social de autos con juntadas privadas y mapa táctico. Demo **PWA** (web app
 
 Usuarios demo (clave `velox`): **ghost** (organizador), **turbo_vale** (piloto), **drift_kid** (novato), **nyx**, **v8bruno**. Código de invitación de ejemplo para la juntada fantasma: `NYX-0451`.
 
+## Mapa
+
+El mapa no necesita API key. Usa tiles abiertos con respaldo automático: CARTO → OpenStreetMap → Esri (en estilo *Noche*, si no está el oscuro de CARTO se oscurece uno claro). Si un proveedor falla en el dispositivo, la app pasa sola al siguiente y recuerda cuál anduvo durante la sesión; si fallan todos, muestra un aviso con *Reintentar*.
+
 ## Fotos demo
 
 Los autos de los usuarios demo traen foto (`client/public/demo/*.jpg`). Son renders fotográficos generados con el mismo modelo 3D de la app (el entorno donde se armó la demo no tenía acceso para descargar fotos reales). Para usar fotos reales alcanza con reemplazar esos archivos manteniendo el nombre, o subir una foto desde el garage.
@@ -43,11 +47,10 @@ El repo incluye `render.yaml` (Blueprint). En Render: **New → Blueprint** → 
 - Start: `npm start`
 - Health check: `/api/health`
 - `JWT_SECRET` autogenerado
-- `MAP_API_KEY`: la key de CARTO. **No está en el repo**: cargala en Render → tu servicio → *Environment* → *Add Environment Variable*. El server la inyecta en la página y viaja en los pedidos de tiles del mapa.
 
 > Para la demo los datos viven en `server/data/db.json` y los archivos subidos en `server/uploads/`. En Render el disco es efímero: cada deploy/reinicio vuelve a sembrar los datos de ejemplo. Para producción: Postgres + almacenamiento de objetos (S3/R2).
 
-Variables opcionales: `MAP_API_KEY` (key de CARTO), `OSRM_URL` (motor de rutas propio; por defecto el servidor público de OSRM), `DATA_DIR`, `UPLOAD_DIR`.
+Variables opcionales: `OSRM_URL` (motor de rutas propio; por defecto el servidor público de OSRM), `DATA_DIR`, `UPLOAD_DIR`.
 
 ## Instalar en el celular
 
