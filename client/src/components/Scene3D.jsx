@@ -1,156 +1,219 @@
-import { Component, useMemo, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Component, useEffect, useMemo, useRef } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { buildCar } from '../lib/car3d.js';
 
-// Silueta lateral del auto (x: largo, y: alto). Se extruye a lo ancho.
-const BODY = [[-2.2, 0.35], [-2.22, 0.82], [-1.9, 0.95], [-1.2, 1.0], [-0.7, 1.42], [0.55, 1.46], [1.2, 1.0], [2.05, 0.86], [2.26, 0.62], [2.2, 0.35]];
-const GLASS = [[-1.08, 1.02], [-0.66, 1.38], [0.52, 1.41], [1.08, 1.02]];
+const SCAN_TIME = 1.8;
 
-function extrude(points, depth, bevel = 0.06) {
-  const shape = new THREE.Shape();
-  points.forEach(([x, y], i) => (i ? shape.lineTo(x, y) : shape.moveTo(x, y)));
-  shape.closePath();
-  const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelSize: bevel, bevelThickness: bevel, bevelSegments: 2 });
-  g.translate(0, 0, -depth / 2);
-  return g;
+// Reflejos para la pintura y las llantas (sin esto el metal se ve negro).
+export function Environment({ intensity = 0.45 }) {
+  const { gl, scene } = useThree();
+  useEffect(() => {
+    const pm = new THREE.PMREMGenerator(gl);
+    const env = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = env;
+    scene.environmentIntensity = intensity;
+    return () => { env.dispose(); pm.dispose(); };
+  }, [gl, scene, intensity]);
+  return null;
 }
 
-function Wheel({ position, spin }) {
-  const ref = useRef();
-  useFrame((_, dt) => { if (spin && ref.current) ref.current.rotation.z -= dt * 14; });
+function canvasTexture(w, h, draw, repeat) {
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(...repeat); }
+  return t;
+}
+
+const speckle = (g, w, h, base, n) => {
+  g.fillStyle = base;
+  g.fillRect(0, 0, w, h);
+  for (let i = 0; i < n; i++) {
+    const v = 30 + Math.random() * 45;
+    g.fillStyle = `rgba(${v},${v},${v + 3},.5)`;
+    g.fillRect(Math.random() * w, Math.random() * h, 2, 2);
+  }
+};
+
+/**
+ * Auto + animación de "reconstrucción": un plano de escaneo recorre el auto,
+ * detrás queda la pintura y adelante todavía el wireframe.
+ */
+export function CarModel({ body, color, spin = false, scan = false }) {
+  const built = useMemo(() => buildCar({ body, color }), [body, color]);
+  const wire = useMemo(() => {
+    const g = new THREE.Group();
+    const m = new THREE.MeshBasicMaterial({ color: '#f2a03d', wireframe: true, transparent: true, opacity: 0.55 });
+    built.group.updateMatrixWorld(true);
+    built.group.traverse((o) => {
+      if (!o.isMesh) return;
+      const w = new THREE.Mesh(o.geometry, m);
+      w.applyMatrix4(o.matrixWorld);
+      g.add(w);
+    });
+    return { g, m };
+  }, [built]);
+  const planes = useMemo(() => ({ solid: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 99), wire: new THREE.Plane(new THREE.Vector3(1, 0, 0), -99) }), []);
+  const bar = useRef();
+  const t0 = useRef(null);
+
+  useEffect(() => {
+    built.materials.forEach((m) => { m.clippingPlanes = [planes.solid]; });
+    wire.m.clippingPlanes = [planes.wire];
+    t0.current = scan ? null : -1;
+  }, [built, wire, planes, scan]);
+  useEffect(() => () => { built.dispose(); wire.m.dispose(); }, [built, wire]);
+
+  useFrame(({ clock }, dt) => {
+    if (spin) built.wheels.forEach((w) => { w.rotation.z -= dt * 16; });
+    if (t0.current === null) t0.current = clock.elapsedTime;
+    const p = t0.current < 0 ? 1 : Math.min(1, (clock.elapsedTime - t0.current) / SCAN_TIME);
+    const x = -2.6 + p * 5.4; // de atrás hacia adelante
+    planes.solid.constant = p >= 1 ? 99 : x;
+    planes.wire.constant = p >= 1 ? -99 : -x;
+    if (bar.current) {
+      bar.current.visible = p < 1;
+      bar.current.position.x = x;
+    }
+  });
+
   return (
-    <group position={position} ref={ref}>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.4, 0.4, 0.32, 20]} />
-        <meshStandardMaterial color="#060606" roughness={0.9} />
+    <group>
+      <primitive object={built.group} />
+      <primitive object={wire.g} />
+      <mesh ref={bar} visible={false} position={[0, 0.9, 0]}>
+        <boxGeometry args={[0.03, 2.2, 2.4]} />
+        <meshBasicMaterial color="#ffb347" transparent opacity={0.8} />
       </mesh>
-      <mesh rotation={[0, 0, 0]} position={[0, 0, position[2] > 0 ? 0.165 : -0.165]}>
-        <torusGeometry args={[0.24, 0.035, 8, 24]} />
-        <meshStandardMaterial color="#cfd6de" emissive="#00f0ff" emissiveIntensity={0.6} metalness={1} roughness={0.25} />
-      </mesh>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <mesh key={i} rotation={[0, 0, (i * Math.PI * 2) / 5]} position={[0, 0, position[2] > 0 ? 0.165 : -0.165]}>
-          <boxGeometry args={[0.04, 0.42, 0.02]} />
-          <meshStandardMaterial color="#9aa3ad" metalness={1} roughness={0.3} />
-        </mesh>
-      ))}
     </group>
   );
 }
 
-function Car({ color, drive }) {
-  const body = useMemo(() => extrude(BODY, 1.7), []);
-  const glass = useMemo(() => extrude(GLASS, 1.74, 0.02), []);
-  const group = useRef();
-  useFrame(({ clock }) => {
-    if (!group.current) return;
-    const t = clock.getElapsedTime();
-    // Vibración de motor + leve "nose dive"
-    group.current.position.y = drive ? Math.sin(t * 40) * 0.008 : 0;
-    group.current.rotation.z = drive ? Math.sin(t * 1.3) * 0.01 : 0;
-  });
-  return (
-    <group ref={group}>
-      <mesh geometry={body} castShadow>
-        <meshPhysicalMaterial color={color} metalness={0.6} roughness={0.28} clearcoat={1} clearcoatRoughness={0.08} />
-      </mesh>
-      <mesh geometry={glass}>
-        <meshPhysicalMaterial color="#05070a" metalness={0.9} roughness={0.05} />
-      </mesh>
-      {/* Spoiler */}
-      <mesh position={[-2.0, 1.22, 0]}>
-        <boxGeometry args={[0.38, 0.05, 1.8]} />
-        <meshStandardMaterial color="#0a0a0a" metalness={0.5} roughness={0.4} />
-      </mesh>
-      {[-0.6, 0.6].map((z) => (
-        <mesh key={z} position={[-1.95, 1.08, z]}>
-          <boxGeometry args={[0.06, 0.25, 0.06]} />
-          <meshStandardMaterial color="#111" />
-        </mesh>
-      ))}
-      {/* Faros y luces traseras */}
-      {[-0.58, 0.58].map((z) => (
-        <group key={z}>
-          <mesh position={[2.27, 0.68, z]}>
-            <boxGeometry args={[0.05, 0.1, 0.42]} />
-            <meshStandardMaterial color="#fff" emissive="#bff9ff" emissiveIntensity={3} />
-          </mesh>
-          <mesh position={[-2.26, 0.74, z]}>
-            <boxGeometry args={[0.05, 0.1, 0.48]} />
-            <meshStandardMaterial color="#ff1a1a" emissive="#ff1a1a" emissiveIntensity={3} />
-          </mesh>
-        </group>
-      ))}
-      {[[1.35, 0.4, 0.86], [1.35, 0.4, -0.86], [-1.4, 0.4, 0.86], [-1.4, 0.4, -0.86]].map((p) => (
-        <Wheel key={p.join()} position={p} spin={drive} />
-      ))}
-      {/* Underglow */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <planeGeometry args={[4.6, 2.4]} />
-        <meshBasicMaterial color={color} transparent opacity={0.35} />
-      </mesh>
-      <pointLight position={[0, 0.2, 0]} color={color} intensity={6} distance={4} />
-      <pointLight position={[3.2, 0.7, 0]} color="#bff9ff" intensity={8} distance={6} />
-    </group>
-  );
-}
-
-function Floor({ drive }) {
-  const grid = useRef();
-  useFrame((_, dt) => {
-    if (drive && grid.current) grid.current.position.x = (grid.current.position.x - dt * 18) % 2;
-  });
+// ---------------- Garage: cemento, ladrillo y graffiti ----------------
+function GarageSet() {
+  const floor = useMemo(() => canvasTexture(1024, 1024, (g, w, h) => {
+    speckle(g, w, h, '#3a3b3e', 60000);
+    for (let i = 0; i < 10; i++) {
+      g.fillStyle = `rgba(12,12,14,${0.12 + Math.random() * 0.2})`;
+      g.beginPath();
+      g.ellipse(Math.random() * w, Math.random() * h, 40 + Math.random() * 90, 25 + Math.random() * 50, Math.random() * 3, 0, 7);
+      g.fill();
+    }
+    g.strokeStyle = 'rgba(0,0,0,.35)';
+    g.lineWidth = 3;
+    for (let x = 0; x < w; x += 256) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+  }, [3, 3]), []);
+  const wall = useMemo(() => canvasTexture(2048, 640, (g, w, h) => {
+    g.fillStyle = '#2b2422';
+    g.fillRect(0, 0, w, h);
+    for (let y = 0; y < h; y += 40) {
+      for (let x = (y / 40) % 2 ? -40 : 0; x < w; x += 80) {
+        const v = 70 + Math.random() * 30;
+        g.fillStyle = `rgb(${v},${v * 0.62},${v * 0.5})`;
+        g.fillRect(x + 3, y + 3, 74, 34);
+      }
+    }
+    g.fillStyle = 'rgba(0,0,0,.35)';
+    g.fillRect(0, 0, w, h);
+    // Tag
+    g.save();
+    g.translate(w * 0.24, h * 0.66);
+    g.rotate(-0.07);
+    g.font = '230px "Sedgwick Ave Display", "Permanent Marker", Impact, sans-serif';
+    g.lineJoin = 'round';
+    g.lineWidth = 26;
+    g.strokeStyle = '#111';
+    g.strokeText('Velox', 0, 0);
+    g.fillStyle = '#e8691e';
+    g.fillText('Velox', 0, 0);
+    g.lineWidth = 6;
+    g.strokeStyle = '#f4e3c3';
+    g.strokeText('Velox', -4, -4);
+    g.restore();
+    g.fillStyle = 'rgba(232,105,30,.85)';
+    for (let i = 0; i < 16; i++) g.fillRect(w * 0.26 + Math.random() * 900, h * 0.66, 4, 20 + Math.random() * 90);
+    g.font = '64px "Permanent Marker", sans-serif';
+    g.fillStyle = '#e9e1d0';
+    g.fillText('CREW · CABA · 99', w * 0.64, h * 0.2);
+  }), []);
   return (
     <>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[200, 200]} />
-        <meshStandardMaterial color="#050608" roughness={0.35} metalness={0.6} />
+        <planeGeometry args={[40, 40]} />
+        <meshStandardMaterial map={floor} roughness={0.85} />
       </mesh>
-      <gridHelper ref={grid} args={[120, 60, '#ff6a00', '#0d3a40']} position={[0, 0.01, 0]} />
+      <mesh position={[0, 4, -5.5]}>
+        <planeGeometry args={[26, 8.1]} />
+        <meshStandardMaterial map={wall} roughness={0.95} />
+      </mesh>
+      {/* Tubo fluorescente */}
+      <mesh position={[0, 6, -1]}>
+        <boxGeometry args={[3, 0.08, 0.12]} />
+        <meshStandardMaterial color="#fff" emissive="#f1f4ff" emissiveIntensity={3} />
+      </mesh>
+      <spotLight position={[0, 7, 1]} angle={0.7} penumbra={0.8} intensity={120} color="#f4f1e8" castShadow />
+      <pointLight position={[-4, 1.6, 3]} intensity={14} color="#ff8a3d" distance={12} />
+      <directionalLight position={[5, 3, -4]} intensity={0.9} color="#9db7ff" />
+      <ambientLight intensity={0.25} />
     </>
   );
 }
 
-function Streaks({ drive }) {
-  const ref = useRef();
-  const items = useMemo(() => Array.from({ length: 36 }, () => ({
-    x: Math.random() * 60 - 30, y: 0.2 + Math.random() * 3.5, z: (Math.random() < 0.5 ? -1 : 1) * (2 + Math.random() * 8),
-    s: 0.6 + Math.random(), c: Math.random() < 0.5 ? '#ff6a00' : '#00f0ff',
-  })), []);
+// ---------------- Login: calle de noche que pasa ----------------
+function StreetSet() {
+  const road = useMemo(() => canvasTexture(512, 512, (g, w, h) => {
+    speckle(g, w, h, '#232428', 25000);
+    g.fillStyle = '#d6c27a';
+    g.fillRect(0, h / 2 - 5, w * 0.55, 10);
+  }, [8, 1]), []);
+  const windows = useMemo(() => canvasTexture(1024, 256, (g, w, h) => {
+    g.fillStyle = '#0d0f13';
+    g.fillRect(0, 0, w, h);
+    for (let x = 8; x < w; x += 26) {
+      for (let y = 12; y < h; y += 30) {
+        g.fillStyle = Math.random() < 0.25 ? (Math.random() < 0.6 ? '#e9c27d' : '#b9c7e0') : '#08090b';
+        g.fillRect(x, y, 14, 18);
+      }
+    }
+  }), []);
+  const lamps = useRef();
   useFrame((_, dt) => {
-    if (!ref.current) return;
-    ref.current.children.forEach((m, i) => {
-      m.position.x -= dt * (drive ? 40 : 4) * items[i].s;
-      if (m.position.x < -30) m.position.x = 30;
+    road.offset.x = (road.offset.x + dt * 1.6) % 1;
+    lamps.current?.children.forEach((l) => {
+      l.position.x -= dt * 26;
+      if (l.position.x < -40) l.position.x += 80;
     });
   });
   return (
-    <group ref={ref}>
-      {items.map((s, i) => (
-        <mesh key={i} position={[s.x, s.y, s.z]}>
-          <boxGeometry args={[2.5 * s.s, 0.02, 0.02]} />
-          <meshBasicMaterial color={s.c} transparent opacity={0.7} />
+    <>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[80, 14]} />
+        <meshStandardMaterial map={road} roughness={0.4} metalness={0.35} />
+      </mesh>
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[0, 6, s * 13]} rotation={[0, s > 0 ? Math.PI : 0, 0]}>
+          <planeGeometry args={[90, 12]} />
+          <meshStandardMaterial map={windows} emissiveMap={windows} emissive="#ffffff" emissiveIntensity={0.5} />
         </mesh>
       ))}
-    </group>
+      <group ref={lamps}>
+        {Array.from({ length: 6 }, (_, i) => (
+          <group key={i} position={[-40 + i * 14, 0, -6.5]}>
+            <mesh position={[0, 3, 0]}><cylinderGeometry args={[0.07, 0.09, 6]} /><meshStandardMaterial color="#25262a" /></mesh>
+            <mesh position={[0, 6, 0.6]}><boxGeometry args={[0.5, 0.12, 0.3]} /><meshStandardMaterial color="#ffd9a0" emissive="#ffc777" emissiveIntensity={3} /></mesh>
+            {i % 2 === 0 && <pointLight position={[0, 5.6, 1.5]} intensity={30} distance={14} color="#ffc777" />}
+          </group>
+        ))}
+      </group>
+      <hemisphereLight args={['#5d6f96', '#140f0b', 0.4]} />
+      <spotLight position={[4, 6, 5]} angle={0.6} penumbra={0.7} intensity={70} color="#ffd2a1" castShadow />
+    </>
   );
-}
-
-function City() {
-  const blocks = useMemo(() => Array.from({ length: 40 }, (_, i) => {
-    const side = i % 2 ? 1 : -1;
-    const h = 2 + Math.random() * 9;
-    const geo = new THREE.BoxGeometry(1.6 + Math.random() * 2, h, 2 + Math.random() * 2);
-    return { pos: [-50 + i * 2.6, h / 2, side * (14 + Math.random() * 10)], geo, edges: new THREE.EdgesGeometry(geo) };
-  }), []);
-  return blocks.map((b, i) => (
-    <group key={i} position={b.pos}>
-      <mesh geometry={b.geo}><meshStandardMaterial color="#07090c" /></mesh>
-      <lineSegments geometry={b.edges}>
-        <lineBasicMaterial color={i % 3 ? '#0c4c55' : '#5a2a0c'} />
-      </lineSegments>
-    </group>
-  ));
 }
 
 function Rig({ mode, dragRef }) {
@@ -158,31 +221,29 @@ function Rig({ mode, dragRef }) {
   const pos = useRef(new THREE.Vector3());
   useFrame(({ camera, clock, pointer, size }) => {
     const t = clock.getElapsedTime();
-    const drag = dragRef?.current || 0;
     const aspect = size.width / size.height;
     // En pantallas verticales alejamos la cámara para que el auto entre completo.
-    const fit = (mode === 'garage' ? 3.1 : 3.2) / (Math.tan((camera.fov * Math.PI) / 360) * Math.min(aspect, 1.6));
-    const r = Math.min(16, Math.max(mode === 'garage' ? 7.2 : 6.8, fit));
-    const ang = mode === 'garage' ? t * 0.25 + drag : 0.78 + pointer.x * 0.35 + Math.sin(t * 0.2) * 0.1;
-    // En el login el auto va en la mitad superior (abajo está el formulario).
-    target.current.set(0, mode === 'drive' && aspect < 1 ? -r * 0.22 : 0.6, 0);
-    pos.current.set(Math.cos(ang) * r, (mode === 'garage' ? 2.2 : 1.9 + pointer.y * 0.6) + r * 0.08, Math.sin(ang) * r);
+    const fit = (mode === 'garage' ? 3.7 : 3.8) / (Math.tan((camera.fov * Math.PI) / 360) * Math.min(aspect, 1.6));
+    const r = Math.min(18, Math.max(7.5, fit));
+    const ang = mode === 'garage' ? 0.55 + Math.sin(t * 0.18) * 0.5 + (dragRef?.current || 0) : 0.75 + pointer.x * 0.3;
+    target.current.set(0, mode === 'drive' && aspect < 1 ? -r * 0.11 : 0.6, 0);
+    pos.current.set(Math.cos(ang) * r, (mode === 'garage' ? 2 : 1.6 + pointer.y * 0.5) + r * 0.07, Math.sin(ang) * r);
     camera.position.lerp(pos.current, 0.06);
     camera.lookAt(target.current);
   });
   return null;
 }
 
-class GLBoundary extends Component {
+export class GLBoundary extends Component {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
   render() {
-    return this.state.failed ? <div className="scene-fallback">// WEBGL OFFLINE</div> : this.props.children;
+    return this.state.failed ? (this.props.fallback ?? <div className="scene-fallback">// 3D no disponible en este equipo</div>) : this.props.children;
   }
 }
 
-/** mode: 'drive' (fondo animado del login) | 'garage' (turntable del perfil) */
-export default function Scene3D({ color = '#ff6a00', mode = 'drive', className = '' }) {
+/** mode: 'drive' (fondo del login) | 'garage' (turntable + reconstrucción) */
+export default function Scene3D({ body = 'coupe', color = '#d8461b', mode = 'drive', scanKey, className = '' }) {
   const drag = useRef(0);
   const last = useRef(null);
   const handlers = mode === 'garage' ? {
@@ -191,20 +252,22 @@ export default function Scene3D({ color = '#ff6a00', mode = 'drive', className =
     onPointerUp: () => { last.current = null; },
     onPointerLeave: () => { last.current = null; },
   } : {};
+  const bg = mode === 'garage' ? '#17171a' : '#0a0c10';
   return (
     <div className={`scene3d ${className}`} {...handlers}>
       <GLBoundary>
-        <Canvas dpr={[1, 1.75]} camera={{ fov: 42, position: [8, 3, 8] }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
-          <color attach="background" args={['#050608']} />
-          <fog attach="fog" args={['#050608', 8, 34]} />
-          <ambientLight intensity={0.25} />
-          <hemisphereLight args={['#00f0ff', '#ff6a00', 0.5]} />
-          <spotLight position={[0, 9, 0]} angle={0.5} penumbra={0.7} intensity={60} color="#ffffff" />
-          <directionalLight position={[-6, 4, -4]} intensity={1.2} color="#ff2bd6" />
-          <Car color={color} drive={mode === 'drive'} />
-          <Floor drive={mode === 'drive'} />
-          <Streaks drive={mode === 'drive'} />
-          {mode === 'drive' && <City />}
+        <Canvas
+          shadows
+          dpr={[1, 1.75]}
+          camera={{ fov: 40, position: [8, 3, 8] }}
+          gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
+          onCreated={({ gl }) => { gl.localClippingEnabled = true; }}
+        >
+          <color attach="background" args={[bg]} />
+          <fog attach="fog" args={[bg, 12, 36]} />
+          <Environment />
+          <CarModel key={scanKey} body={body} color={color} spin={mode === 'drive'} scan={mode === 'garage'} />
+          {mode === 'garage' ? <GarageSet /> : <StreetSet />}
           <Rig mode={mode} dragRef={drag} />
         </Canvas>
       </GLBoundary>

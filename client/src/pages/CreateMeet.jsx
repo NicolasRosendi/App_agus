@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMapEvents } from 'react-leaflet';
 import { api } from '../lib/api.js';
 import { useToast } from '../lib/toast.jsx';
+import { useAuth } from '../lib/auth.jsx';
 import { DEFAULT_CENTER } from '../lib/constants.js';
 import { dms } from '../lib/format.js';
 import Icon from '../components/Icon.jsx';
@@ -24,6 +25,7 @@ const tomorrowNight = () => {
 export default function CreateMeet() {
   const nav = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
   const mapRef = useRef(null);
   const [spot, setSpot] = useState(DEFAULT_CENTER);
   const [form, setForm] = useState({
@@ -68,7 +70,7 @@ export default function CreateMeet() {
 
         <div className="section-title">02 · El spot</div>
         <div className="spot-picker">
-          <TacticalMap ref={mapRef} center={DEFAULT_CENTER} zoom={13}>
+          <TacticalMap ref={mapRef} center={DEFAULT_CENTER} zoom={13} mapStyle={user.prefs.mapStyle}>
             <CenterWatcher onMove={(c) => setSpot({ lat: c.lat, lng: c.lng })} />
           </TacticalMap>
           <div className="map-crosshair"><Icon name="crosshair" size={44} stroke={1.5} /></div>

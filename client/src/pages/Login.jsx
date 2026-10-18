@@ -44,7 +44,7 @@ export default function Login() {
   return (
     <div className="login">
       <Suspense fallback={<div className="scene3d" />}>
-        <Scene3D mode="drive" color="#ff6a00" className="login-bg" />
+        <Scene3D mode="drive" color="#c8401a" className="login-bg" />
       </Suspense>
       <div className="login-shade" />
       <div className="login-content">

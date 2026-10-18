@@ -1,6 +1,6 @@
 # VELOX // UNDERGROUND
 
-Red social de autos con juntadas privadas y mapa táctico. Demo **PWA** (web app instalable en Android e iOS) inspirada en Velox, con estética Need for Speed Carbon + Watch Dogs + graffiti noventoso.
+Red social de autos con juntadas privadas y mapa táctico. Demo **PWA** (web app instalable en Android e iOS) inspirada en Velox, con estética callejera tipo Need for Speed y un mapa con onda hacker / hip hop de los 90 (VHS, cassette, stickers y graffiti).
 
 **Stack:** Node + Express (API + estáticos) · React 18 + Vite · Leaflet (mapa) · three.js / react-three-fiber (3D).
 
@@ -10,14 +10,20 @@ Red social de autos con juntadas privadas y mapa táctico. Demo **PWA** (web app
 | --- | --- |
 | **Feed** | Posts con foto o arte generado, likes (doble tap), comentarios, tags. Ranking "Para vos" personalizado por intereses + seguidos. |
 | **Reels** | Videos verticales con scroll snap, autoplay del visible, likes y comentarios. |
-| **Mapa táctico** | Reportes estilo Waze (cámaras, radares, controles, calles rotas, accidentes, obras) con confirmar/desmentir; talleres, tuning, lavaderos, estaciones y gomerías estilo blips de GTA; capas personalizables; vista 3D inclinada. |
-| **Ruta fantasma** | Ruta predictiva que pide alternativas a OSRM, puntúa cada una según los reportes que cruza (y lo que cada usuario eligió evitar) y, si hace falta, prueba desvíos con waypoints fantasma alrededor del obstáculo. |
+| **Mapa táctico** | Mapa de calles legible (estilo *Calle* tipo Maps o *Noche*), reportes estilo Waze (cámaras, radares, controles, calles rotas, accidentes, obras) como stickers con confirmar/desmentir; talleres, tuning, lavaderos, estaciones y gomerías estilo blips de GTA; capas personalizables; tu auto en 3D sobre el mapa. |
+| **Ruta fantasma** | Ruta predictiva que pide alternativas a OSRM, puntúa cada una según los reportes que cruza (y lo que cada usuario eligió evitar) y, si hace falta, prueba desvíos con waypoints fantasma alrededor del obstáculo. Se dibuja como en Maps (azul con borde, alternativa en gris), con instrucciones paso a paso en castellano y modo **Manejar**: el mapa se inclina, tu auto 3D recorre la ruta y avisa las alertas que vienen. |
 | **Juntadas** | Modo *underground* (zona cifrada en el mapa, se pide acceso) o *fantasma* (invisible, solo con código). La coordenada exacta **nunca sale del servidor** hasta que el usuario está aprobado (y opcionalmente hasta X horas antes). |
 | **Panel de ops** | El organizador controla todo: cola de validación, motor de reglas automático (rep mínima, patente verificada, categorías, crews de confianza, modo estricto, lista de espera con promoción automática), códigos de invitación (usos, vencimiento, auto-aprobación), broadcast, revelar ubicación, check-in por pase, expulsar/banear, co-organizadores, log de operaciones. |
-| **Perfil / Garage** | Autos con foto + patente (enmascarada para terceros, "verificado" con foto+patente), garage 3D con selector de color, nivel por reputación, badges. |
+| **Perfil / Garage** | Autos con foto + patente (enmascarada para terceros, "verificado" con foto+patente). Al subir la foto se **recrea el auto en 3D**: se detecta el color de la carrocería desde la foto y el tipo de carrocería por marca/modelo (ajustable a mano), con animación de escaneo. Ese modelo es el que maneja en el mapa. Botón *Usar foto demo* para probarlo. |
 | **Modo pasos** | Teaser: puntos acumulados por reportar/validar y recompensas bloqueadas (descuentos en talleres/lavaderos/estaciones). |
 
 Usuarios demo (clave `velox`): **ghost** (organizador), **turbo_vale** (piloto), **drift_kid** (novato), **nyx**, **v8bruno**. Código de invitación de ejemplo para la juntada fantasma: `NYX-0451`.
+
+## Fotos demo
+
+Los autos de los usuarios demo traen foto (`client/public/demo/*.jpg`). Son renders fotográficos generados con el mismo modelo 3D de la app (el entorno donde se armó la demo no tenía acceso para descargar fotos reales). Para usar fotos reales alcanza con reemplazar esos archivos manteniendo el nombre, o subir una foto desde el garage.
+
+> La "reconstrucción 3D" es una aproximación (carrocería + color). Un modelo fiel a la foto requiere un servicio de imagen-a-3D (por ejemplo, APIs tipo Meshy o Tripo); queda como próximo paso.
 
 ## Correr local
 

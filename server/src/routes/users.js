@@ -8,6 +8,7 @@ const r = Router();
 r.use(requireAuth);
 
 const CATEGORIES = ['JDM', 'EURO', 'MUSCLE', 'TUNING', 'CLÁSICO', 'STANCE', 'DRIFT', '4X4', 'OTRO'];
+const BODIES = ['coupe', 'sedan', 'hatch', 'muscle', 'classic', 'suv'];
 
 r.get('/categories', (_req, res) => res.json({ categories: CATEGORIES }));
 
@@ -61,7 +62,7 @@ r.post('/me/avatar', upload.single('file'), (req, res) => {
 
 // Garage: el auto con foto + patente. La patente queda enmascarada para terceros.
 r.post('/me/cars', upload.single('photo'), (req, res) => {
-  const { make, model, year, category, color, plate, hp, mods } = req.body;
+  const { make, model, year, category, color, plate, hp, mods, body } = req.body;
   if (!make || !model) return res.status(400).json({ error: 'Marca y modelo son obligatorios' });
   const car = {
     id: id('car'),
@@ -69,7 +70,8 @@ r.post('/me/cars', upload.single('photo'), (req, res) => {
     model: String(model).slice(0, 32),
     year: Number(year) || null,
     category: CATEGORIES.includes(category) ? category : 'OTRO',
-    color: /^#[0-9a-f]{6}$/i.test(color || '') ? color : '#ff6a00',
+    color: /^#[0-9a-f]{6}$/i.test(color || '') ? color : '#d8461b',
+    body: BODIES.includes(body) ? body : null,
     plate: plate ? String(plate).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) : null,
     // Demo: con patente + foto queda "verificado". En prod va validación manual/OCR.
     plateVerified: Boolean(plate && req.file),

@@ -1,11 +1,11 @@
 // "Foto" procedural para posts sin imagen: póster tipo tapa de revista tuning / pared pintada.
 const PALETTES = {
-  carbon: ['#ff6a00', '#1b1f27', '#00f0ff'],
-  ctos: ['#00f0ff', '#020c10', '#ffffff'],
-  neon: ['#ff2bd6', '#12021a', '#00f0ff'],
-  rust: ['#ff3b3b', '#1a0d07', '#ffd400'],
-  toxic: ['#c9ff00', '#0b1205', '#ff2bd6'],
-  graffiti: ['#ffd400', '#111111', '#ff2bd6'],
+  carbon: ['#e8621a', '#1b1d22', '#ece3cf'],
+  ctos: ['#6fa8c7', '#0c1418', '#ece3cf'],
+  neon: ['#c2417d', '#160b12', '#f2c230'],
+  rust: ['#d8372b', '#1a0d07', '#f2c230'],
+  toxic: ['#a9c93a', '#10140a', '#e8621a'],
+  graffiti: ['#f2c230', '#111111', '#d8372b'],
 };
 
 export default function CarArt({ palette = 'carbon', car = 'VELOX', kicker = '' }) {

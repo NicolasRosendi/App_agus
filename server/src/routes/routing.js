@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from '../auth.js';
 import { activeReports } from './map.js';
 import { pointToPolyline, distance, offset } from '../geo.js';
+import { stepsFrom } from '../directions.js';
 
 const r = Router();
 r.use(requireAuth);
@@ -14,7 +15,7 @@ const PENALTY = { camara: 240, radar: 240, control: 420, accidente: 200, bache: 
 async function osrm(points) {
   const coords = points.map((p) => `${p.lng.toFixed(6)},${p.lat.toFixed(6)}`).join(';');
   const alt = points.length === 2 ? '&alternatives=3' : '';
-  const res = await fetch(`${OSRM}/route/v1/driving/${coords}?overview=full&geometries=geojson${alt}`, { signal: AbortSignal.timeout(8000) });
+  const res = await fetch(`${OSRM}/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=true${alt}`, { signal: AbortSignal.timeout(8000) });
   if (!res.ok) throw new Error(`OSRM ${res.status}`);
   const data = await res.json();
   if (data.code !== 'Ok') throw new Error(data.code);
@@ -22,6 +23,7 @@ async function osrm(points) {
     line: rt.geometry.coordinates.map(([lng, lat]) => ({ lat, lng })),
     distance: rt.distance,
     duration: rt.duration,
+    steps: stepsFrom(rt),
   }));
 }
 
@@ -62,7 +64,7 @@ r.post('/safe', async (req, res) => {
       best = candidates.reduce((a, b) => (a.score <= b.score ? a : b));
     }
 
-    const pack = (rt, kind) => ({ kind, line: rt.line, distance: rt.distance, duration: rt.duration, hazards: rt.hits, avoided: rt.detour || false });
+    const pack = (rt, kind) => ({ kind, line: rt.line, distance: rt.distance, duration: rt.duration, hazards: rt.hits, avoided: rt.detour || false, steps: rt.steps });
     res.json({
       engine: 'osrm',
       ghost: pack(best, 'ghost'),
@@ -73,7 +75,7 @@ r.post('/safe', async (req, res) => {
     // Sin motor de rutas: línea directa para no dejar la UI vacía.
     const line = Array.from({ length: 30 }, (_, i) => ({ lat: from.lat + ((to.lat - from.lat) * i) / 29, lng: from.lng + ((to.lng - from.lng) * i) / 29 }));
     const rt = analyze({ line, distance: distance(from, to), duration: distance(from, to) / 9 }, hazards, avoid);
-    res.json({ engine: 'offline', error: String(err.message || err), ghost: { kind: 'ghost', line, distance: rt.distance, duration: rt.duration, hazards: rt.hits }, fastest: null, saved: 0 });
+    res.json({ engine: 'offline', error: String(err.message || err), ghost: { kind: 'ghost', line, distance: rt.distance, duration: rt.duration, hazards: rt.hits, steps: [{ text: 'Sin motor de rutas: seguí la línea directa', type: 'depart', distance: rt.distance, at: from }] }, fastest: null, saved: 0 });
   }
 });
 

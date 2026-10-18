@@ -13,7 +13,7 @@ r.post('/register', (req, res) => {
   if (db().users.some((u) => u.handle === handle)) return res.status(409).json({ error: 'Ese alias ya está tomado' });
   const user = {
     id: id('u'), handle, name: handle.toUpperCase(), crew: null, bio: '', avatar: null,
-    color: ['#ff6a00', '#00f0ff', '#ff2bd6', '#c9ff00'][Math.floor(Math.random() * 4)],
+    color: ['#e8621a', '#6fa8c7', '#c2417d', '#a9c93a', '#f2c230'][Math.floor(Math.random() * 5)],
     rep: 10, points: 0, badges: [], interests: [], cars: [], following: [],
     passwordHash: hashPassword(password),
     prefs: {

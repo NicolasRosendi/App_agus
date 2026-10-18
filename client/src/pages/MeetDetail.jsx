@@ -75,11 +75,11 @@ export default function MeetDetail() {
       <BackBar title={meet.title} sub={`por @${meet.organizer.handle}`} right={staff && <Link to={`/juntadas/${id}/ops`} className="btn sm">Ops</Link>} />
 
       <div className="meet-hero">
-        <TacticalMap center={center} zoom={meet.spot ? 15 : 13} interactive={false} className="meet-map">
+        <TacticalMap center={center} zoom={meet.spot ? 15 : 13} interactive={false} className="meet-map" mapStyle={user.prefs.mapStyle}>
           {meet.spot ? (
             <Marker position={[meet.spot.lat, meet.spot.lng]} icon={spotIcon(meet.spot.label)} />
           ) : (
-            <Circle center={[meet.zone.lat, meet.zone.lng]} radius={meet.zone.radius} pathOptions={{ className: 'zone-circle', color: '#ff2bd6', weight: 1.5, dashArray: '6 8', fillColor: '#ff2bd6', fillOpacity: 0.12 }} />
+            <Circle center={[meet.zone.lat, meet.zone.lng]} radius={meet.zone.radius} pathOptions={{ className: 'zone-circle', color: '#e8621a', weight: 2, dashArray: '2 10', fillColor: '#e8621a', fillOpacity: 0.1 }} />
           )}
         </TacticalMap>
         {!meet.spot && (

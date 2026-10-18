@@ -14,35 +14,35 @@ export function seed() {
 
   const users = [
     {
-      id: 'u_ghost', handle: 'ghost', name: 'GHOST', crew: 'NOCTURNOS', color: '#ff6a00',
+      id: 'u_ghost', handle: 'ghost', name: 'GHOST', crew: 'NOCTURNOS', color: '#e8621a',
       bio: 'Organizo. No pregunten dónde. // ex-trackday',
       rep: 820, points: 1340, badges: ['ORGANIZADOR', 'FUNDADOR', 'OJO DE HALCÓN'],
       interests: ['JDM', 'TUNING', 'DRIFT'],
-      cars: [car({ make: 'Nissan', model: 'Skyline R34 GT-T', year: 1999, category: 'JDM', color: '#1b6cff', plate: 'AB123CD', plateVerified: true, hp: 380, mods: ['Turbo HKS', 'Coilovers', 'Escape full'] })],
+      cars: [car({ make: 'Nissan', model: 'Skyline R34 GT-T', year: 1999, category: 'JDM', color: '#1b4fd6', body: 'coupe', photo: '/demo/r34.jpg', plate: 'AB123CD', plateVerified: true, hp: 380, mods: ['Turbo HKS', 'Coilovers', 'Escape full'] })],
     },
     {
-      id: 'u_nyx', handle: 'nyx', name: 'NYX', crew: 'NOCTURNOS', color: '#00f0ff',
+      id: 'u_nyx', handle: 'nyx', name: 'NYX', crew: 'NOCTURNOS', color: '#6fa8c7',
       bio: 'Hackeo semáforos (mentira). Euro lover.', rep: 540, points: 610,
       badges: ['ORGANIZADORA', 'CAZACÁMARAS'], interests: ['EURO', 'STANCE'],
-      cars: [car({ make: 'BMW', model: 'M3 E46', year: 2003, category: 'EURO', color: '#c9ff00', plate: 'AC777XZ', plateVerified: true, hp: 343, mods: ['Llantas BBS', 'Stance'] })],
+      cars: [car({ make: 'BMW', model: 'M3 E46', year: 2003, category: 'EURO', color: '#e0b41a', body: 'coupe', photo: '/demo/m3.jpg', plate: 'AC777XZ', plateVerified: true, hp: 343, mods: ['Llantas BBS', 'Stance'] })],
     },
     {
-      id: 'u_vale', handle: 'turbo_vale', name: 'VALE TURBO', crew: 'SUR KINGS', color: '#ff2bd6',
+      id: 'u_vale', handle: 'turbo_vale', name: 'VALE TURBO', crew: 'SUR KINGS', color: '#c2417d',
       bio: 'Si suena a turbo, me interesa.', rep: 260, points: 300,
       badges: ['REPORTERA'], interests: ['JDM', 'DRIFT'],
-      cars: [car({ make: 'Toyota', model: 'Supra MK4', year: 1997, category: 'JDM', color: '#ff2bd6', plate: 'AD456EF', plateVerified: true, hp: 520 })],
+      cars: [car({ make: 'Toyota', model: 'Supra MK4', year: 1997, category: 'JDM', color: '#b8141b', body: 'coupe', photo: '/demo/supra.jpg', plate: 'AD456EF', plateVerified: true, hp: 520 })],
     },
     {
-      id: 'u_drift', handle: 'drift_kid', name: 'DRIFT KID', crew: null, color: '#c9ff00',
+      id: 'u_drift', handle: 'drift_kid', name: 'DRIFT KID', crew: null, color: '#a9c93a',
       bio: 'Recién arranco. Corolla con alma de AE86.', rep: 40, points: 55,
       badges: [], interests: ['DRIFT', 'JDM'],
-      cars: [car({ make: 'Toyota', model: 'Corolla AE86', year: 1986, category: 'JDM', color: '#f5f5f5', plate: 'RTA932', hp: 130 })],
+      cars: [car({ make: 'Toyota', model: 'Corolla AE86', year: 1986, category: 'JDM', color: '#efefef', body: 'hatch', photo: '/demo/ae86.jpg', plate: 'RTA932', hp: 130 })],
     },
     {
-      id: 'u_bruno', handle: 'v8bruno', name: 'BRUNO V8', crew: 'MUSCLE OESTE', color: '#ff3b3b',
+      id: 'u_bruno', handle: 'v8bruno', name: 'BRUNO V8', crew: 'MUSCLE OESTE', color: '#d8372b',
       bio: 'Cilindrada no se reemplaza.', rep: 180, points: 220,
       badges: ['REPORTERO'], interests: ['MUSCLE', 'CLÁSICOS'],
-      cars: [car({ make: 'Ford', model: 'Falcon Sprint', year: 1978, category: 'CLÁSICO', color: '#ff3b3b', plate: 'XKC221', plateVerified: true, hp: 210 })],
+      cars: [car({ make: 'Ford', model: 'Falcon Sprint', year: 1978, category: 'CLÁSICO', color: '#a3221b', body: 'classic', photo: '/demo/falcon.jpg', plate: 'XKC221', plateVerified: true, hp: 210 })],
     },
   ].map((u) => ({
     ...u,
@@ -72,10 +72,10 @@ export function seed() {
   });
 
   const posts = [
-    post('u_ghost', 2, { text: 'El R34 volvió del taller. 380hp limpios. La próxima juntada se viene pesada 👻', tags: ['JDM', 'TUNING'], media: art('carbon', 'SKYLINE R34', 'BACK ONLINE'), likes: ['u_nyx', 'u_vale', 'u_drift'], comments: [{ id: uid('c'), userId: 'u_vale', text: 'Esa bestia 🔥', at: now - HOUR }] }),
+    post('u_ghost', 2, { text: 'El R34 volvió del taller. 380hp limpios. La próxima juntada se viene pesada 👻', tags: ['JDM', 'TUNING'], media: { kind: 'image', url: '/demo/r34.jpg' }, likes: ['u_nyx', 'u_vale', 'u_drift'], comments: [{ id: uid('c'), userId: 'u_vale', text: 'Esa bestia 🔥', at: now - HOUR }] }),
     post('u_nyx', 5, { text: 'Cámara nueva en Libertador y Pampa. Ya está en el mapa. De nada.', tags: ['AVISO'], media: art('ctos', 'CTOS // ALERTA', 'CÁMARA NUEVA'), likes: ['u_ghost', 'u_bruno'] }),
     post('u_vale', 9, { type: 'reel', text: 'Pull de 2da a 4ta 🚀', tags: ['JDM', 'DRIFT'], media: { kind: 'video', url: `${VIDEO}/ForBiggerJoyrides.mp4`, fallback: art('neon', 'SUPRA MK4', '2JZ') }, likes: ['u_ghost', 'u_drift'] }),
-    post('u_bruno', 14, { text: 'Domingo de lavado. El Falcon brilla más que mi futuro.', tags: ['CLÁSICOS'], media: art('rust', 'FALCON SPRINT', 'SUNDAY WASH'), place: 'Lavadero Espuma Negra', likes: ['u_ghost'] }),
+    post('u_bruno', 14, { text: 'Domingo de lavado. El Falcon brilla más que mi futuro.', tags: ['CLÁSICOS'], media: { kind: 'image', url: '/demo/falcon.jpg' }, place: 'Lavadero Espuma Negra', likes: ['u_ghost'] }),
     post('u_drift', 20, { type: 'reel', text: 'Primer intento de drift (en playón cerrado, tranqui)', tags: ['DRIFT'], media: { kind: 'video', url: `${VIDEO}/ForBiggerEscapes.mp4`, fallback: art('toxic', 'AE86', 'FIRST SLIDE') }, likes: ['u_vale'] }),
     post('u_nyx', 30, { type: 'reel', text: 'Stance check. Cero roce.', tags: ['EURO', 'STANCE'], media: { kind: 'video', url: `${VIDEO}/ForBiggerBlazes.mp4`, fallback: art('ctos', 'M3 E46', 'STANCE') }, likes: ['u_ghost'] }),
     post('u_ghost', 48, { text: 'Recordatorio: en las juntadas no se queman gomas en zona urbana. El que rompe la regla queda afuera del sistema.', tags: ['REGLAS'], media: art('graffiti', 'NO RULES = NO MEETS', 'MANIFIESTO'), likes: ['u_nyx', 'u_vale', 'u_bruno', 'u_drift'] }),

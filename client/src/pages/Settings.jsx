@@ -6,7 +6,7 @@ import { CATEGORIES } from '../lib/constants.js';
 import Icon from '../components/Icon.jsx';
 import { BackBar } from '../components/ui.jsx';
 
-const COLORS = ['#ff6a00', '#00f0ff', '#ff2bd6', '#c9ff00', '#ff3b3b', '#ffd400'];
+const COLORS = ['#e8621a', '#6fa8c7', '#c2417d', '#a9c93a', '#d8372b', '#f2c230', '#ece3cf'];
 
 function InstallCard() {
   const [prompt, setPrompt] = useState(null);

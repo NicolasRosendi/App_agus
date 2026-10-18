@@ -1,18 +1,18 @@
 export const REPORT_TYPES = {
-  camara: { label: 'Cámara', color: '#ff3b3b', icon: 'camera', hint: 'Fotomulta fija' },
-  radar: { label: 'Radar móvil', color: '#ff2bd6', icon: 'radar', hint: 'Control de velocidad' },
-  control: { label: 'Control', color: '#00a2ff', icon: 'shield', hint: 'Policía / alcoholemia' },
-  bache: { label: 'Calle rota', color: '#ffd400', icon: 'pothole', hint: 'Bache / pozo' },
-  accidente: { label: 'Accidente', color: '#ff6a00', icon: 'crash', hint: 'Choque en la vía' },
-  obra: { label: 'Obra', color: '#c9ff00', icon: 'cone', hint: 'Corte / desvío' },
+  camara: { label: 'Cámara', color: '#e0392b', icon: 'camera', hint: 'Fotomulta fija' },
+  radar: { label: 'Radar móvil', color: '#d8579a', icon: 'radar', hint: 'Control de velocidad' },
+  control: { label: 'Control', color: '#3b82d6', icon: 'shield', hint: 'Policía / alcoholemia' },
+  bache: { label: 'Calle rota', color: '#f2c230', icon: 'pothole', hint: 'Bache / pozo' },
+  accidente: { label: 'Accidente', color: '#e8621a', icon: 'crash', hint: 'Choque en la vía' },
+  obra: { label: 'Obra', color: '#f08a24', icon: 'cone', hint: 'Corte / desvío' },
 };
 
 export const POI_TYPES = {
-  taller: { label: 'Talleres', color: '#ff6a00', icon: 'wrench', letter: 'T' },
-  tuning: { label: 'Tuning', color: '#ff2bd6', icon: 'bolt', letter: 'K' },
-  lavadero: { label: 'Lavaderos', color: '#00f0ff', icon: 'drop', letter: 'L' },
-  nafta: { label: 'Estaciones', color: '#c9ff00', icon: 'fuel', letter: 'E' },
-  gomeria: { label: 'Gomerías', color: '#ffd400', icon: 'tire', letter: 'G' },
+  taller: { label: 'Talleres', color: '#e8621a', icon: 'wrench', letter: 'T' },
+  tuning: { label: 'Tuning', color: '#c2417d', icon: 'bolt', letter: 'K' },
+  lavadero: { label: 'Lavaderos', color: '#3b9fd6', icon: 'drop', letter: 'L' },
+  nafta: { label: 'Estaciones', color: '#3fa34d', icon: 'fuel', letter: 'E' },
+  gomeria: { label: 'Gomerías', color: '#d9a21b', icon: 'tire', letter: 'G' },
 };
 
 export const CATEGORIES = ['JDM', 'EURO', 'MUSCLE', 'TUNING', 'CLÁSICO', 'STANCE', 'DRIFT', '4X4', 'OTRO'];
